@@ -12,59 +12,42 @@ import java.util.*;
 public class HelloController {
 
     
-    private final CommunicationApplication communicationApplication;
-    HelloController(CommunicationApplication communicationApplication) {
-        this.communicationApplication = communicationApplication;
+    private final BuahService buahService;
+    HelloController(BuahService buahService) {
+        this.buahService = buahService;
     }
     //apa yang terjadi? client melakukan request untuk mengakses /Hello terus responnya apa dari server? server memberikan respon "Halo Welcome to my /Hello API Happy Learning!"
-    private List<String> getListBuah(){
-        return Arrays.asList("apel", "pisang", "semangka", "mangga");
-    }
     @GetMapping("/api/buah")
     // /api/buah?nama= ini parameter @RequestParam
-    public Object handleRequestBuah(@RequestParam(value="nama", required = false) String nama) {
-        if(nama == null || nama.isEmpty()){
-            return getListBuah();
-        }
+    public Object handleRequestBuah(@RequestParam(value="nama",required = false) String nama) {
         Map<String, String> response = new HashMap<>();
-        List<String> getListBuah = getListBuah();
-        Integer indeksBuah = null;
-        for(int i = 0; i < getListBuah.size();i++){
-            if(getListBuah.get(i).equalsIgnoreCase(nama)){
-                indeksBuah = i;
-                break;
-            }
+        if(nama == null || nama.isEmpty()){
+            return buahService.dapatkanSemuaBuah();
         }
-        if(indeksBuah == null){
-            response.put("buah", "Tidak ada");
-            response.put("status", "Bad Response");
+        if(buahService.dapatkanBuah(nama).getNama() == null){
+            response.put("status", "Bad Request");
+            response.put("pesan", "tidak ada buah itu di list buah");
             return response;
         }
-        response.put("id", String.valueOf(indeksBuah));
-        response.put("nama", getListBuah.get(indeksBuah));
-        response.put("status", "Success");
-        return response;
-        
+        return buahService.dapatkanBuah(nama);
     }
+
+    
     @PostMapping("/api/buah")
     //kenapa kok pakai RequestBody? karena kalau secara arsitektur client isi form terus kirim form -> berarti kirim request ke ->server
     //Request dari Client {"nama": "x", "harga": x, "isMuda": true}
-    public Map<String, Object> buatBuahBaru(@RequestBody BuahRequest request){
-        Map<String, Object> response = new HashMap<>();
-        String mudaOrTua = null;
-        if(request.getIsMuda() == false){
-            mudaOrTua = "tua";
-        }else{
-            mudaOrTua = "muda";
-        }
-        //output respon saat diinput. . .
-        response.put("status", "Success Terkirim");
+    public Object buatBuahBaru(@RequestBody BuahRequest request){
         
-        response.put("pesan", "Buah "+request.getNama()+" "+mudaOrTua+" Sukses ditambahkan kedalam keranjang");
-        response.put("harga_per_kilo", "Rp. "+request.getHarga());
-        response.put("harga_per_kuintal", "Rp. "+request.getHarga()*100);
-
-        return response;
+        Map<String, String> response = new HashMap<>();
+        String namaBuah = request.getNama();
+        //kasus kalau misalnya namaBuah null
+        if(buahService.apakahBuahSudahAda(namaBuah)){
+            response.put("Status", "Bad Response");
+            response.put("Pesan", "request gak berhasil ditambahkan");
+            return response;
+        }
+        buahService.tambahBuah(request);
+        return buahService.dapatkanSemuaBuah();
     }
     //End API (api/Buah)
 }
