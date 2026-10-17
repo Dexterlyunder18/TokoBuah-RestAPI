@@ -8,9 +8,9 @@ public class BuahService {
     private List<BuahRequest> listKeranjangBuah = new ArrayList<>();
     //Saat program di jalankan BuahService() akan otomatis memiliki default buah bawaan.
     public BuahService(){
-        listKeranjangBuah.add(new BuahRequest("Apel", 7000, true));        
-        listKeranjangBuah.add(new BuahRequest("Mangga", 10000, false));        
-        listKeranjangBuah.add(new BuahRequest("Durian", 12000, false));        
+        listKeranjangBuah.add(new BuahRequest("apel", 7000, true));        
+        listKeranjangBuah.add(new BuahRequest("mangga", 10000, false));        
+        listKeranjangBuah.add(new BuahRequest("durian", 12000, false));        
     }
     public List<BuahRequest> dapatkanSemuaBuah() {
         return this.listKeranjangBuah;
@@ -21,7 +21,7 @@ public class BuahService {
             //kalau mangga == mangga
             if(listKeranjangBuah.get(i).getNama().equalsIgnoreCase(nama)){
                 //call buah dan isinya
-                buah.setNama(listKeranjangBuah.get(i).getNama());
+                buah.setNama(listKeranjangBuah.get(i).getNama().toLowerCase());
                 buah.setHarga(listKeranjangBuah.get(i).getHarga());
                 buah.setIsMuda(listKeranjangBuah.get(i).getIsMuda());
             }
@@ -42,5 +42,25 @@ public class BuahService {
             }
         }
         return false;
+    }
+
+    public int buatIdBuah(String nama){
+        for(int i = 0; i < listKeranjangBuah.size(); i++){
+            if(nama.equalsIgnoreCase(listKeranjangBuah.get(i).getNama())){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public void updateBuah(int id, String nama, int harga, boolean isMuda){
+        BuahRequest buah = listKeranjangBuah.get(id);
+        buah.setNama(nama.toLowerCase());
+        buah.setHarga(harga);
+        buah.setIsMuda(isMuda);
+    }
+
+    public void removeBuah(int id){
+        listKeranjangBuah.remove(id);
     }
 }

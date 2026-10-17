@@ -1,11 +1,15 @@
 package com.example.communication;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.*;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 
 @RestController 
@@ -31,12 +35,11 @@ public class HelloController {
         }
         return buahService.dapatkanBuah(nama);
     }
-
     
     @PostMapping("/api/buah")
     //kenapa kok pakai RequestBody? karena kalau secara arsitektur client isi form terus kirim form -> berarti kirim request ke ->server
     //Request dari Client {"nama": "x", "harga": x, "isMuda": true}
-    public Object buatBuahBaru(@RequestBody BuahRequest request){
+    public Object handleBuatBuahBaru(@RequestBody BuahRequest request){
         
         Map<String, String> response = new HashMap<>();
         String namaBuah = request.getNama();
@@ -49,5 +52,32 @@ public class HelloController {
         buahService.tambahBuah(request);
         return buahService.dapatkanSemuaBuah();
     }
+    @PutMapping("/api/buah/{id}")
+    public Object handlePengupdateanBuah(@PathVariable int id, @RequestBody BuahRequest request){
+        //id harus dapetin index
+        Map<String, String> response = new HashMap<>();
+        if(id < 0 || id >= buahService.dapatkanPanjangDaftarBuah()){
+            response.put("status", "Bad Request");
+            response.put("pesan", "Gagal update! ID index " + id + " tidak ditemukan.");
+            return response;
+        }
+
+        buahService.updateBuah(id, request.getNama(), request.getHarga(), request.getIsMuda());
+        return buahService.dapatkanSemuaBuah();
+    }
+    @DeleteMapping ("/api/buah")
+    public Object handlePenghapusanBuah(@RequestParam(value = "nama", required = false) String nama){
+        int id = buahService.buatIdBuah(nama);
+        if (id == -1) {
+            Map<String, String> response = new HashMap<>();
+            response.put("status", "Bad Request");
+            response.put("pesan", "Gagal menghapus! Buah " + nama + " tidak ditemukan.");
+            return response;
+        }
+        buahService.removeBuah(id);
+        return buahService.dapatkanSemuaBuah();
+    }
+    
     //End API (api/Buah)
+
 }
