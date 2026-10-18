@@ -37,7 +37,7 @@ public class BuahService {
     }
 
     public void updateBuah(String namaBuahYangMauDiedit, Buah dataBaru){
-        Buah buahLama = buahRepository.findById(namaBuahYangMauDiedit).orElse(null);
+        Buah buahLama = dataBaru;
         if (buahLama != null) {
             buahLama.setHarga(dataBaru.getHarga());
             buahLama.setIsMuda(dataBaru.getIsMuda());
