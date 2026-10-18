@@ -1,4 +1,4 @@
-# TokoBunga-RestAPI
+# TokoBuah-RestAPI
 
 A Java-based RESTful API designed to handle flower store data communication, focusing on robust **Global Error Handling**, **Data Validation**, and **High Performance Under Load**. This repository serves as a practical implementation of software engineering best practices for backend developers.
 
