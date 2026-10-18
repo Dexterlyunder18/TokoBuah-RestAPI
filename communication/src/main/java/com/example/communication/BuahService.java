@@ -26,15 +26,6 @@ public class BuahService {
     public long dapatkanPanjangDaftarBuah(){
         return buahRepository.count();
     }
-    public int buatIdBuah(String nama){
-        Buah buah = new Buah();
-        for(int i = 0; i < buahRepository.count();i++){
-            if(buah.getNama().equalsIgnoreCase(nama)){
-                return i;
-            }
-        }
-        return -1;
-    }
 
     public boolean removeBuah(String nama){
         Buah buahLama = buahRepository.findById(nama).orElse(null);
