@@ -5,62 +5,53 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class BuahService {
-    private List<BuahRequest> listKeranjangBuah = new ArrayList<>();
-    //Saat program di jalankan BuahService() akan otomatis memiliki default buah bawaan.
-    public BuahService(){
-        listKeranjangBuah.add(new BuahRequest("apel", 7000, true));        
-        listKeranjangBuah.add(new BuahRequest("mangga", 10000, false));        
-        listKeranjangBuah.add(new BuahRequest("durian", 12000, false));        
+    private final BuahRepository buahRepository;
+    public BuahService(BuahRepository buahRepository){
+        this.buahRepository = buahRepository;
     }
-    public List<BuahRequest> dapatkanSemuaBuah() {
-        return this.listKeranjangBuah;
+    public List<Buah> dapatkanSemuaBuah(){
+        return buahRepository.findAll();
     }
-    public BuahRequest dapatkanBuah(String nama){
-        BuahRequest buah = new BuahRequest();
-        for(int i = 0; i < listKeranjangBuah.size(); i++){
-            //kalau mangga == mangga
-            if(listKeranjangBuah.get(i).getNama().equalsIgnoreCase(nama)){
-                //call buah dan isinya
-                buah.setNama(listKeranjangBuah.get(i).getNama().toLowerCase());
-                buah.setHarga(listKeranjangBuah.get(i).getHarga());
-                buah.setIsMuda(listKeranjangBuah.get(i).getIsMuda());
-            }
-        }
-        return buah;
+    public Buah dapatkanBuah(String nama){
+        return  buahRepository.findById(nama).orElse(null);
     }
-    public void tambahBuah(BuahRequest buahBaru){
-        listKeranjangBuah.add(buahBaru);
-    }
-    public int dapatkanPanjangDaftarBuah(){
-        return this.listKeranjangBuah.size();
-    }
-
     public boolean apakahBuahSudahAda(String nama){
-        for(BuahRequest b :listKeranjangBuah){
-            if(b.getNama().equalsIgnoreCase(nama)){
-                return  true;
-            }
-        }
-        return false;
+        return buahRepository.existsById(nama);
     }
 
+    public void tambahBuah(Buah buah){
+        buahRepository.save(buah);
+    }
+
+    public long dapatkanPanjangDaftarBuah(){
+        return buahRepository.count();
+    }
     public int buatIdBuah(String nama){
-        for(int i = 0; i < listKeranjangBuah.size(); i++){
-            if(nama.equalsIgnoreCase(listKeranjangBuah.get(i).getNama())){
+        Buah buah = new Buah();
+        for(int i = 0; i < buahRepository.count();i++){
+            if(buah.getNama().equalsIgnoreCase(nama)){
                 return i;
             }
         }
         return -1;
     }
 
-    public void updateBuah(int id, String nama, int harga, boolean isMuda){
-        BuahRequest buah = listKeranjangBuah.get(id);
-        buah.setNama(nama.toLowerCase());
-        buah.setHarga(harga);
-        buah.setIsMuda(isMuda);
+    public boolean removeBuah(String nama){
+        Buah buahLama = buahRepository.findById(nama).orElse(null);
+        if(buahLama != null){
+            buahRepository.deleteById(nama);
+            return true;
+        }
+        return false;
     }
 
-    public void removeBuah(int id){
-        listKeranjangBuah.remove(id);
+    public void updateBuah(String namaBuahYangMauDiedit, Buah dataBaru){
+        Buah buahLama = buahRepository.findById(namaBuahYangMauDiedit).orElse(null);
+        if (buahLama != null) {
+            buahLama.setHarga(dataBaru.getHarga());
+            buahLama.setIsMuda(dataBaru.getIsMuda());
+            
+            buahRepository.save(buahLama); 
+        }
     }
 }

@@ -1,13 +1,22 @@
 package com.example.communication;
 
-public class BuahRequest {
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Data;
+
+@Entity 
+@Data 
+@Table (name="buah")
+public class Buah {
+    @Id 
     private String nama;
     private int harga;
     private boolean isMuda;
 
-    public BuahRequest(){   
+    public Buah(){   
     }
-    public BuahRequest(String nama, int harga, boolean isMuda){
+    public Buah(String nama, int harga, boolean isMuda){
         this.nama = nama;
         this.harga = harga;
         this.isMuda = isMuda;
@@ -34,4 +43,5 @@ public class BuahRequest {
         this.isMuda = isMuda;
     }
 
+    
 }

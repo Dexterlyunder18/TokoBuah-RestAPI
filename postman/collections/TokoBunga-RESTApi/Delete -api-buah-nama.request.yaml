@@ -1,5 +1,5 @@
 $kind: http-request
-name: New Request
+name: Delete /api/buah/nama
 url: ""
 method: GET
 order: 5000

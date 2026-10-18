@@ -39,7 +39,7 @@ public class HelloController {
     @PostMapping("/api/buah")
     //kenapa kok pakai RequestBody? karena kalau secara arsitektur client isi form terus kirim form -> berarti kirim request ke ->server
     //Request dari Client {"nama": "x", "harga": x, "isMuda": true}
-    public Object handleBuatBuahBaru(@RequestBody BuahRequest request){
+    public Object handleBuatBuahBaru(@RequestBody Buah request){
         
         Map<String, String> response = new HashMap<>();
         String namaBuah = request.getNama();
@@ -52,29 +52,28 @@ public class HelloController {
         buahService.tambahBuah(request);
         return buahService.dapatkanSemuaBuah();
     }
-    @PutMapping("/api/buah/{id}")
-    public Object handlePengupdateanBuah(@PathVariable int id, @RequestBody BuahRequest request){
+    @PutMapping("/api/buah/{nama}")
+    public Object handlePengupdateanBuah(@PathVariable String nama, @RequestBody Buah request){
         //id harus dapetin index
         Map<String, String> response = new HashMap<>();
-        if(id < 0 || id >= buahService.dapatkanPanjangDaftarBuah()){
+        if(!buahService.apakahBuahSudahAda(nama)){
             response.put("status", "Bad Request");
-            response.put("pesan", "Gagal update! ID index " + id + " tidak ditemukan.");
+            response.put("pesan", "Gagal update! dengan nama " + nama + " tidak ditemukan.");
             return response;
         }
 
-        buahService.updateBuah(id, request.getNama(), request.getHarga(), request.getIsMuda());
+        buahService.updateBuah(request.getNama(), request);
         return buahService.dapatkanSemuaBuah();
     }
-    @DeleteMapping ("/api/buah")
-    public Object handlePenghapusanBuah(@RequestParam(value = "nama", required = false) String nama){
-        int id = buahService.buatIdBuah(nama);
-        if (id == -1) {
+    @DeleteMapping ("/api/buah/{nama}")
+    public Object handlePenghapusanBuah(@PathVariable String nama){
+        if (buahService.removeBuah(nama) == false) {
             Map<String, String> response = new HashMap<>();
             response.put("status", "Bad Request");
             response.put("pesan", "Gagal menghapus! Buah " + nama + " tidak ditemukan.");
             return response;
         }
-        buahService.removeBuah(id);
+        buahService.removeBuah(nama);
         return buahService.dapatkanSemuaBuah();
     }
     
