@@ -9,16 +9,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.communication.dto.ProdukResponseDto;
 import com.example.communication.entity.Produk;
 import com.example.communication.services.ProdukService;
 
 
 @RestController 
 public class ProdukController {
-    @GetMapping("/")
-    public Object handleGreetings(){
-        return "Hello";
+    private final ProdukService produkService;
+    ProdukController(ProdukService produkService){
+        this.produkService = produkService;
+    }
+
+    @GetMapping("/produk")
+    public List<ProdukResponseDto> handleProduk(){
+        return produkService.tampilkanProduk();
     }
 }
